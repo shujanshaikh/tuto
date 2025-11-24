@@ -242,16 +242,15 @@ function MeetingPageComponent() {
   // Recording prompt modal
   if (showRecordingPrompt) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="bg-zinc-900 rounded-none border border-zinc-800 max-w-md w-full p-8 relative">
-
-          <div className="text-center space-y-8">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="bg-card rounded-xl border border-border max-w-md w-full p-8 shadow-lg">
+          <div className="text-center space-y-6">
             <div className="space-y-2">
-              <h2 className="text-xl font-medium text-zinc-50 tracking-tight">
+              <h2 className="text-2xl font-bold tracking-tight">
                 Record Session
               </h2>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                This meeting will be recorded for later access.
+              <p className="text-sm text-muted-foreground">
+                This class will be recorded and available for students to review later.
               </p>
             </div>
 
@@ -259,7 +258,7 @@ function MeetingPageComponent() {
               <Button
                 onClick={handleStartRecording}
                 disabled={isRecordingLoading}
-                className="w-full h-10 bg-zinc-50 hover:bg-zinc-200 text-zinc-900 rounded-none font-medium transition-all"
+                className="w-full h-11"
               >
                 {isRecordingLoading ? (
                   <>
@@ -274,11 +273,11 @@ function MeetingPageComponent() {
               </Button>
 
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => setShowRecordingPrompt(false)}
-                className="w-full h-10 text-zinc-400 hover:text-zinc-50 hover:bg-transparent rounded-none"
+                className="w-full h-11"
               >
-                Skip
+                Skip for Now
               </Button>
 
               <button
@@ -286,9 +285,9 @@ function MeetingPageComponent() {
                   setShowRecordingPrompt(false);
                   localStorage.setItem(`no-recording-${uuid}`, 'true');
                 }}
-                className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Don't ask again
+                Don't ask again for this class
               </button>
             </div>
           </div>
@@ -300,11 +299,11 @@ function MeetingPageComponent() {
   // Show loading state while connecting
   if (!token || roomInstance.state === "disconnected" || isTokenLoading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <Loader2 className="w-6 h-6 text-zinc-50 animate-spin mx-auto" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
           <div className="space-y-1">
-            <p className="text-sm text-zinc-500 font-medium tracking-wide uppercase">Connecting</p>
+            <p className="text-sm text-muted-foreground font-medium">Connecting to class...</p>
           </div>
         </div>
       </div>
@@ -312,15 +311,15 @@ function MeetingPageComponent() {
   }
 
   return (
-    <div className="h-screen w-full bg-zinc-950 flex flex-col overflow-hidden">
+    <div className="h-screen w-full bg-background flex flex-col overflow-hidden">
       <RoomContext.Provider value={roomInstance}>
 
-        {/* Top Bar - Minimal */}
-        <header className="h-14 px-6 flex items-center justify-between z-10 shrink-0">
+        {/* Top Bar */}
+        <header className="h-16 px-6 flex items-center justify-between z-10 shrink-0 border-b border-border/40 bg-background/95 backdrop-blur">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
-              <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+              <span className="text-sm font-medium text-foreground">
                 {username}
               </span>
             </div>
@@ -328,9 +327,9 @@ function MeetingPageComponent() {
 
           <div className="flex items-center gap-2">
             {recording && (
-              <div className="flex items-center gap-2 px-3 py-1">
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-[10px] font-medium text-red-500 tracking-wider uppercase">REC</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-xs font-medium text-red-500 tracking-wide">Recording</span>
               </div>
             )}
           </div>
@@ -339,7 +338,7 @@ function MeetingPageComponent() {
         {/* Main Content Area */}
         <main className="flex-1 flex relative overflow-hidden px-6 pb-24 gap-4">
           {/* Video Conference Area */}
-          <div className={`flex-1 h-full transition-all duration-500 rounded-lg overflow-hidden border border-zinc-900 bg-zinc-900/50 ${showWhiteboard ? 'w-1/2' : 'w-full'}`}>
+          <div className={`flex-1 h-full transition-all duration-500 rounded-xl overflow-hidden border border-border bg-card ${showWhiteboard ? 'w-1/2' : 'w-full'}`}>
             <MyVideoConference
               handleSend={handleSend}
               message={message}
@@ -351,11 +350,11 @@ function MeetingPageComponent() {
 
           {/* Whiteboard Area */}
           {showWhiteboard && (
-            <div className="w-1/2 h-full rounded-lg overflow-hidden border border-zinc-900 bg-zinc-900/50 animate-in slide-in-from-right-10 duration-500">
-              <div className="flex items-center justify-center h-full text-zinc-600">
-                <div className="text-center space-y-4">
-                  <PenTool className="w-8 h-8 mx-auto opacity-20" />
-                  <p className="text-xs uppercase tracking-widest opacity-50">Whiteboard</p>
+            <div className="w-1/2 h-full rounded-xl overflow-hidden border border-border bg-card animate-in slide-in-from-right-10 duration-500">
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center space-y-3">
+                  <PenTool className="w-8 h-8 mx-auto text-muted-foreground opacity-50" />
+                  <p className="text-xs text-muted-foreground font-medium">Whiteboard</p>
                 </div>
               </div>
             </div>
@@ -364,31 +363,27 @@ function MeetingPageComponent() {
 
         {/* Unified Bottom Control Bar */}
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <div className="flex items-center gap-1 p-1.5 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 rounded-full shadow-2xl">
+          <div className="flex items-center gap-1 p-1.5 bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg">
 
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate({ to: "/meetings" })}
-              className="h-10 w-10 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="h-10 w-10 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
               title="Back"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
 
-            <div className="w-px h-4 bg-zinc-800 mx-1" />
-
-            {/* Standard Controls Placeholder - In a real app these would be hooked up */}
-            {/* Assuming MyVideoConference has its own controls, we might want to hide them and put them here,
-                    but for now we are adding the requested extra controls here */}
+            <div className="w-px h-4 bg-border mx-1" />
 
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleWhiteboard}
               className={`h-10 w-10 rounded-full transition-all ${showWhiteboard
-                ? "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
-                : "hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "hover:bg-accent text-muted-foreground hover:text-foreground"
                 }`}
               title="Whiteboard"
             >
@@ -404,7 +399,7 @@ function MeetingPageComponent() {
               disabled={isRecordingLoading || isStopRecordingLoading}
               className={`h-10 w-10 rounded-full transition-all ${recording
                 ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                : "hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                : "hover:bg-accent text-muted-foreground hover:text-foreground"
                 }`}
               title={recording ? "Stop Recording" : "Start Recording"}
             >
@@ -415,13 +410,13 @@ function MeetingPageComponent() {
               )}
             </Button>
 
-            <div className="w-px h-4 bg-zinc-800 mx-1" />
+            <div className="w-px h-4 bg-border mx-1" />
 
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate({ to: "/meetings" })}
-              className="h-10 w-10 rounded-full hover:bg-red-950/30 text-zinc-400 hover:text-red-500 transition-colors"
+              className="h-10 w-10 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
               title="Leave"
             >
               <PhoneOff className="w-4 h-4" />

@@ -38,8 +38,6 @@ app.get("/", (c) => {
 });
 
 app.get("/getToken", async (c) => {
-	console.log("Getting token");
-	console.log(c.req.query());
 	try {
 		const roomName = c.req.query("roomName") as string;
 		const participantName = c.req.query("participantName") as string;
@@ -70,10 +68,9 @@ app.get("/getToken", async (c) => {
 			canSubscribe: true,
 		});
 
-		const token = await at.toJwt();
-
-		console.log("Generated Token for existing room:", roomName);
-
+		const token = await at.toJwt()
+		console.log(token)
+       
 		return c.json({ token });
 	} catch (error) {
 		console.error("Error generating token:", error);
