@@ -32,7 +32,7 @@ function RecordingsDemoPage() {
         return data.map((meeting) => ({
             id: meeting.id,
             playlistUrl: `${r2Url}/${meeting.id}.m3u8`,
-            title: meeting.name,  
+            title: meeting.name,
             description: meeting.description,
             duration: 'N/A', // Duration not available from API
             createdAt: new Date(meeting.createdAt.toString()),
@@ -49,11 +49,12 @@ function RecordingsDemoPage() {
     }, [recordings, selectedRecording]);
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen bg-background relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+            <div className="container mx-auto px-4 py-8 relative z-10">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">My Recordings</h1>
+                <div className="mb-8 animate-fade-in">
+                    <h1 className="text-4xl font-bold mb-2 bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">My Recordings</h1>
                     <p className="text-muted-foreground">
                         Stream and download your LiveKit recordings
                     </p>
@@ -91,7 +92,7 @@ function RecordingsDemoPage() {
 
                 {/* Main Content */}
                 {!isLoading && !error && recordings.length > 0 && selectedRecording && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in [animation-delay:100ms]">
                         {/* Recordings List */}
                         <div className="lg:col-span-1 space-y-3">
                             <h2 className="text-xl font-semibold mb-4">Available Recordings ({recordings.length})</h2>
@@ -100,17 +101,23 @@ function RecordingsDemoPage() {
                                     <button
                                         key={recording.id}
                                         onClick={() => setSelectedRecording(recording)}
-                                        className={`w-full p-4 text-left rounded-lg border-2 transition-all ${selectedRecording.id === recording.id
-                                                ? 'border-primary bg-primary/10'
-                                                : 'border-border hover:border-primary/50 hover:bg-accent'
+                                        className={`group w-full p-4 text-left rounded-lg border-2 transition-all duration-300 ${selectedRecording.id === recording.id
+                                                ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                                                : 'border-border hover:border-primary/50 hover:bg-accent hover:shadow-md hover:-translate-y-0.5'
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                                            <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${selectedRecording.id === recording.id
+                                                    ? 'bg-primary/30 scale-110'
+                                                    : 'bg-primary/20 group-hover:bg-primary/30 group-hover:scale-110'
+                                                }`}>
                                                 <Play className="w-5 h-5 text-primary" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-semibold truncate">{recording.title}</p>
+                                                <p className={`font-semibold truncate transition-colors duration-300 ${selectedRecording.id === recording.id
+                                                        ? 'text-primary'
+                                                        : 'group-hover:text-primary'
+                                                    }`}>{recording.title}</p>
                                                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                                                     {recording.duration !== 'N/A' && (
                                                         <span className="flex items-center gap-1">
@@ -132,7 +139,7 @@ function RecordingsDemoPage() {
 
                         {/* Player Section */}
                         <div className="lg:col-span-2">
-                            <div className="rounded-xl border bg-card p-6">
+                            <div className="rounded-xl border bg-card p-6 shadow-lg hover:shadow-xl transition-all duration-300">
                                 {/* Recording Info */}
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-bold mb-2">{selectedRecording.title}</h2>

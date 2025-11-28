@@ -46,12 +46,12 @@ function RouteComponent() {
     }, [meetings])
 
     return (
-        <div className="min-h-screen bg-background">
-
-            <main className="container mx-auto px-4 py-8">
-                <div className="mb-8 flex items-center justify-between">
+        <div className="min-h-screen bg-background relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+            <main className="container mx-auto px-4 py-8 relative z-10">
+                <div className="mb-8 flex items-center justify-between animate-fade-in">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight mb-2 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-bold tracking-tight mb-2 bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
                             Welcome back
                         </h1>
                         <p className="text-muted-foreground text-lg">Here's what's happening with your classes today</p>
@@ -167,12 +167,12 @@ function RouteComponent() {
                 {!isLoading && !error && (
                     <>
                         <div className="grid gap-6 md:grid-cols-3 mb-8">
-                            <Card className="relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+                            <Card className="relative overflow-hidden group hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 animate-fade-in [animation-delay:100ms]">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-300" />
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-sm font-medium text-muted-foreground">Total Classes</CardTitle>
-                                        <Video className="h-4 w-4 text-primary" />
+                                        <Video className="h-4 w-4 text-primary transition-transform duration-300 group-hover:scale-110" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
@@ -183,12 +183,12 @@ function RouteComponent() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+                            <Card className="relative overflow-hidden group hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 animate-fade-in [animation-delay:200ms]">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-300" />
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-sm font-medium text-muted-foreground">Total Recordings</CardTitle>
-                                        <PlayCircle className="h-4 w-4 text-primary" />
+                                        <PlayCircle className="h-4 w-4 text-primary transition-transform duration-300 group-hover:scale-110" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
@@ -199,12 +199,12 @@ function RouteComponent() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+                            <Card className="relative overflow-hidden group hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 animate-fade-in [animation-delay:300ms]">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-300" />
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-sm font-medium text-muted-foreground">Hours Taught</CardTitle>
-                                        <Users className="h-4 w-4 text-primary" />
+                                        <Users className="h-4 w-4 text-primary transition-transform duration-300 group-hover:scale-110" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
@@ -216,14 +216,14 @@ function RouteComponent() {
                             </Card>
                         </div>
 
-                        <div className="mb-8 flex gap-3">
-                            <Button asChild className="shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                        <div className="mb-8 flex gap-3 animate-fade-in [animation-delay:400ms]">
+                            <Button asChild className="shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:scale-105">
                                 <Link to="/meetings">
                                     <Plus className="h-4 w-4 mr-2" />
                                     Create New Class
                                 </Link>
                             </Button>
-                            <Button variant="outline" asChild>
+                            <Button variant="outline" asChild className="transition-all duration-300 hover:scale-105 hover:shadow-md">
                                 <Link to="/recordings">
                                     <Video className="h-4 w-4 mr-2" />
                                     View All Recordings
@@ -322,13 +322,13 @@ function MeetingItem({
 
     return (
         <Link to="/meeting/$uuid" params={{ uuid: id }}>
-            <div className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+            <div className="group flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover:shadow-md hover:-translate-y-0.5">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary flex-shrink-0 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
                     <Calendar className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-semibold text-sm truncate">{title}</h4>
+                        <h4 className="font-semibold text-sm truncate group-hover:text-primary transition-colors duration-300">{title}</h4>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 truncate">{description}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
@@ -358,14 +358,14 @@ function RecordingItem({
 
     return (
         <Link to="/recordings">
-            <div className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+            <div className="group flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover:shadow-md hover:-translate-y-0.5">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary flex-shrink-0 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
                     <PlayCircle className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-semibold text-sm truncate">{title}</h4>
-                        <Badge variant="outline" className="text-xs whitespace-nowrap">
+                        <h4 className="font-semibold text-sm truncate group-hover:text-primary transition-colors duration-300">{title}</h4>
+                        <Badge variant="outline" className="text-xs whitespace-nowrap group-hover:border-primary/50 transition-colors duration-300">
                             Recording
                         </Badge>
                     </div>
