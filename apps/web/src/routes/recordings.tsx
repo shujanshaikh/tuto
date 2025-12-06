@@ -17,6 +17,7 @@ interface Recording {
     duration: string;
     createdAt: Date;
     thumbnailUrl?: string;
+    meetingId: string;
 }
 
 const r2Url = import.meta.env.VITE_R2_URL;
@@ -40,6 +41,7 @@ function RecordingsDemoPage() {
             description: meeting.description,
             duration: 'N/A', // Duration not available from API
             createdAt: new Date(meeting.createdAt.toString()),
+            meetingId: meeting.id,
         }));
     }, [data]);
 
@@ -225,6 +227,7 @@ function RecordingsDemoPage() {
                                                             playlistUrl={selectedRecording.playlistUrl}
                                                             recordingId={selectedRecording.id}
                                                             className="w-full"
+                                                            meetingId={selectedRecording.meetingId}
                                                         />
                                                     </div>
                                                 </CardContent>
