@@ -138,6 +138,21 @@ function MeetingPageComponent() {
 
       roomInstance.on("dataReceived", (payload, participant) => {
         const text = new TextDecoder().decode(payload);
+
+        // Check if this is a transcription message (from the agent)
+        // and skip adding it to chat messages if so
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed && typeof parsed === 'object' &&
+            'text' in parsed && 'type' in parsed &&
+            ('speaker' in parsed || 'timestamp' in parsed)) {
+            // This is a transcription message, don't add to chat
+            return;
+          }
+        } catch {
+          // Not JSON, treat as regular message
+        }
+
         setMessages((prev) => [
           ...prev,
           { from: participant?.identity ?? "unknown", text },
@@ -409,7 +424,7 @@ function MeetingPageComponent() {
             </div>
           )}
         </main>
-            
+
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
           <div className="flex items-center gap-1 p-1.5 bg-card/95 backdrop-blur-md border border-border rounded-full shadow-lg">
 

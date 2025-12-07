@@ -115,8 +115,9 @@ export default function MyVideoConference({ handleSend, message, setMessage, mes
         </div>
       </Card>
 
-      <Card className="w-full lg:w-80 h-full gap-0 p-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border/80 px-5 py-3">
+      <Card className="w-full lg:w-80 h-full gap-0 p-0 overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex-shrink-0 flex items-center justify-between border-b border-border/80 px-5 py-3">
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-[11px]">Chat</Badge>
             <span className="text-xs text-muted-foreground">{status}</span>
@@ -124,13 +125,14 @@ export default function MyVideoConference({ handleSend, message, setMessage, mes
           <Badge variant="outline" className="text-[11px]">{messages.length} messages</Badge>
         </div>
 
+        {/* Captions Section - Fixed max height */}
         {transcripts.length > 0 && (
-          <div className="border-b border-border/80 px-5 py-3">
-            <div className="flex items-center justify-between">
+          <div className="flex-shrink-0 max-h-[40%] border-b border-border/80 px-5 py-3 flex flex-col">
+            <div className="flex-shrink-0 flex items-center justify-between">
               <Badge variant="outline" className="text-[11px]">Captions</Badge>
               <span className="text-[11px] text-muted-foreground">Live</span>
             </div>
-            <ScrollArea className="mt-2 max-h-32 pr-2">
+            <ScrollArea className="mt-2 flex-1 min-h-0 pr-2">
               <div className="space-y-1.5">
                 {transcripts.slice(-5).map((t, i) => (
                   <div
@@ -149,18 +151,19 @@ export default function MyVideoConference({ handleSend, message, setMessage, mes
           </div>
         )}
 
-        <div className="flex-1 px-5 py-3">
+        {/* Messages Section - Takes remaining space */}
+        <div className="flex-1 min-h-0 px-5 py-3 flex flex-col">
           {messages.length === 0 ? (
             <div className="text-muted-foreground text-sm text-center mt-4">No messages yet</div>
           ) : (
-            <ScrollArea className="h-full pr-2">
+            <ScrollArea className="flex-1 min-h-0 pr-2">
               <ul className="space-y-2">
                 {messages.map((m, i) => (
                   <li
                     key={i}
                     className={`flex flex-col gap-1 rounded-xl border px-3 py-2 text-sm ${m.from === "me"
-                        ? "border-primary/40 bg-primary/10 text-foreground"
-                        : "border-border/80 bg-muted/60"
+                      ? "border-primary/40 bg-primary/10 text-foreground"
+                      : "border-border/80 bg-muted/60"
                       }`}
                   >
                     <span className="text-[11px] font-medium text-muted-foreground">{m.from}</span>
@@ -172,7 +175,8 @@ export default function MyVideoConference({ handleSend, message, setMessage, mes
           )}
         </div>
 
-        <div className="flex items-center gap-2 border-t border-border/80 px-5 py-3">
+        {/* Input Section - Fixed at bottom */}
+        <div className="flex-shrink-0 flex items-center gap-2 border-t border-border/80 px-5 py-3">
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
