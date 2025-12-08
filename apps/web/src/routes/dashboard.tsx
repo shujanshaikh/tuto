@@ -9,9 +9,10 @@ import {
     Loader2,
     AlertCircle,
     Trophy,
-    Activity,
     TrendingUp,
-    ArrowUpRight
+    ArrowUpRight,
+    GraduationCap,
+    BookOpen
 } from 'lucide-react'
 import { useTRPC } from '@/utils/trpc'
 import { useQuery } from '@tanstack/react-query'
@@ -30,23 +31,39 @@ function RouteComponent() {
     const { data: meetings, isLoading, error } = useQuery(trpc.meeting.getMeetings.queryOptions())
     const { data: session } = authClient.useSession()
 
+    const heroName = session?.user.name?.split(' ')[0] || 'Explorer'
     const stats = useMemo(() => {
-        if (!meetings) return { total: 0, thisWeek: 0, hours: 0 }
+        if (!meetings) return { total: 0, thisWeek: 0, prevWeek: 0, uniqueDays: 0, activeDaysThisWeek: 0 }
 
-        const oneWeekAgo = new Date()
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+        const now = new Date()
+        const startOfThisWeek = new Date()
+        startOfThisWeek.setDate(now.getDate() - 7)
+        const startOfPrevWeek = new Date()
+        startOfPrevWeek.setDate(now.getDate() - 14)
+        const endOfPrevWeek = new Date()
+        endOfPrevWeek.setDate(now.getDate() - 7)
 
-        const thisWeekMeetings = meetings.filter(m =>
-            new Date(m.createdAt.toString()) > oneWeekAgo
-        )
+        const thisWeekMeetings = meetings.filter(m => {
+            const created = new Date(m.createdAt.toString())
+            return created >= startOfThisWeek
+        })
+
+        const prevWeekMeetings = meetings.filter(m => {
+            const created = new Date(m.createdAt.toString())
+            return created >= startOfPrevWeek && created < endOfPrevWeek
+        })
+
+        const uniqueDays = new Set(meetings.map(m => new Date(m.createdAt.toString()).toDateString())).size
+        const activeDaysThisWeek = new Set(thisWeekMeetings.map(m => new Date(m.createdAt.toString()).toDateString())).size
 
         return {
             total: meetings.length,
             thisWeek: thisWeekMeetings.length,
-            hours: Math.floor(meetings.length * 1.2) // Mock hours
+            prevWeek: prevWeekMeetings.length,
+            uniqueDays,
+            activeDaysThisWeek,
         }
     }, [meetings])
-
 
     const recentMeetings = useMemo(() => {
         if (!meetings) return []
@@ -61,22 +78,64 @@ function RouteComponent() {
             <SidebarInset className="bg-background overflow-hidden">
 
                 <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-fade-in">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                                Game, Set, Match, {session?.user.name?.split(' ')[0] || 'Player'}!
-                            </h1>
-                            <p className="text-muted-foreground mt-1">
-                                Your performance overview for today.
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20">
-                                <Link to="/meetings">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    New Match
-                                </Link>
-                            </Button>
+                    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-r from-primary/10 via-secondary/20 to-background/80 p-6 md:p-8 shadow-lg animate-fade-in">
+                        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,_var(--primary)_0,_transparent_55%)]" />
+                        <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between relative z-10">
+                            <div className="space-y-3">
+                                <div className="inline-flex items-center gap-2 rounded-full bg-background/70 px-3 py-1 text-xs font-semibold text-primary border border-primary/30">
+                                    Personalized learning HQ
+                                </div>
+                                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                                    Welcome back, {heroName}! Ready to teach & learn?
+                                </h1>
+                                <p className="text-muted-foreground max-w-2xl">
+                                    Plan live classes, track learner progress, and drop quick learning resources. Everything you need to keep students engaged.
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30">
+                                        <Link to="/meetings">
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Launch a live class
+                                        </Link>
+                                    </Button>
+                                    <Button variant="outline" asChild>
+                                        <Link to="/recordings">
+                                            <Video className="mr-2 h-4 w-4" />
+                                            Share a lesson recording
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-72">
+                                <Card className="border-border/60 shadow-md bg-background/70 backdrop-blur">
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <GraduationCap className="h-5 w-5 text-primary" />
+                                            Learning health
+                                        </CardTitle>
+                                        <CardDescription>Activity this week</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span>Classes this week</span>
+                                            <Badge variant="secondary">{stats.thisWeek}</Badge>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span>Total classes</span>
+                                            <span className="font-semibold">{stats.total}</span>
+                                        </div>
+                                        <div className="h-2 w-full rounded-full bg-muted/60 overflow-hidden">
+                                            <div
+                                                className="h-full bg-primary rounded-full transition-all"
+                                                style={{ width: `${stats.total ? Math.min(100, Math.round((stats.thisWeek / stats.total) * 100)) : 0}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Keep the streak going by scheduling your next class today.
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </div>
                     </div>
 
@@ -94,25 +153,24 @@ function RouteComponent() {
                         <>
                             <div className="grid gap-4 md:grid-cols-3">
                                 <StatsCard
-                                    title="Total Matches"
+                                    title="Total Classes"
                                     value={stats.total}
                                     trend={stats.thisWeek}
                                     icon={Trophy}
                                     delay={100}
                                 />
                                 <StatsCard
-                                    title="Training Hours"
-                                    value={stats.hours}
-                                    trend={Math.floor(stats.thisWeek * 1.2)}
-                                    icon={Activity}
+                                    title="Classes This Week"
+                                    value={stats.thisWeek}
+                                    trend={Math.max(stats.thisWeek - stats.prevWeek, 0)}
+                                    icon={GraduationCap}
                                     delay={200}
-                                    suffix="h"
                                 />
                                 <StatsCard
-                                    title="Recordings"
-                                    value={stats.total}
-                                    trend={stats.thisWeek}
-                                    icon={Video}
+                                    title="Active Teaching Days"
+                                    value={stats.uniqueDays}
+                                    trend={stats.activeDaysThisWeek}
+                                    icon={BookOpen}
                                     delay={300}
                                 />
                             </div>
@@ -120,8 +178,8 @@ function RouteComponent() {
                             <div className="grid gap-6 md:grid-cols-7 lg:grid-cols-7">
                                 <Card className="md:col-span-4 border-border/60 shadow-sm animate-fade-in [animation-delay:400ms]">
                                     <CardHeader>
-                                        <CardTitle>Recent Activity</CardTitle>
-                                        <CardDescription>Your latest sessions on the court.</CardDescription>
+                                        <CardTitle>Recent Classes</CardTitle>
+                                        <CardDescription>Latest learning sessions you or your team hosted.</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         {meetings && meetings.length === 0 ? (
@@ -129,7 +187,7 @@ function RouteComponent() {
                                                 <div className="bg-muted/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                                     <Trophy className="w-8 h-8 text-muted-foreground/50" />
                                                 </div>
-                                                <h3 className="text-lg font-medium">No matches yet</h3>
+                                                <h3 className="text-lg font-medium">No classes yet</h3>
                                                 <p className="text-muted-foreground text-sm mt-1 mb-4">Start your first session to see stats here.</p>
                                                 <Button variant="outline" asChild>
                                                     <Link to="/meetings">Create Class</Link>
@@ -164,58 +222,63 @@ function RouteComponent() {
                                 </Card>
 
                                 <div className="md:col-span-3 space-y-6 animate-fade-in [animation-delay:500ms]">
-                                    <Card className="bg-gradient-to-br from-secondary/40 to-secondary/10 border-none shadow-md overflow-hidden relative">
-                                        <div className="absolute inset-0 pointer-events-none opacity-10">
-                                            <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white"></div>
-                                            <div className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-white"></div>
-                                            <div className="absolute top-[20%] bottom-[20%] left-[20%] right-[20%] border-2 border-white"></div>
-                                        </div>
-
+                                    <Card className="border-none shadow-md overflow-hidden relative bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+                                        <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_30%_20%,_var(--primary)_0,_transparent_35%)]" />
                                         <CardHeader>
-                                            <CardTitle className="text-foreground">Court Status</CardTitle>
-                                            <CardDescription className="text-foreground/70">Ready for your next match?</CardDescription>
+                                            <CardTitle className="text-foreground flex items-center gap-2">
+                                                Quick start
+                                            </CardTitle>
+                                            <CardDescription className="text-foreground/70">Guide learners or set up your next cohort.</CardDescription>
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="space-y-4 relative z-10">
-                                                <div className="flex items-center justify-between bg-background/40 backdrop-blur-md p-3 rounded-lg">
-                                                    <span className="text-sm font-medium">Next Session</span>
-                                                    <Badge variant="secondary" className="bg-primary/20 text-primary-foreground hover:bg-primary/30">Today, 4 PM</Badge>
-                                                </div>
-                                                <div className="flex items-center justify-between bg-background/40 backdrop-blur-md p-3 rounded-lg">
-                                                    <span className="text-sm font-medium">Court Type</span>
-                                                    <span className="text-sm text-muted-foreground">Clay</span>
-                                                </div>
-                                                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg" asChild>
-                                                    <Link to="/meetings">
-                                                        Start Session
-                                                    </Link>
-                                                </Button>
+                                            <div className="space-y-3 relative z-10">
+                                                {[
+                                                    { label: 'Plan a live class', badge: 'Teacher', href: '/meetings' },
+                                                    { label: 'Upload a lesson recording', badge: 'Resource', href: '/recordings' },
+                                                    { label: 'Review learner questions', badge: 'Feedback', href: '/meeting/$uuid' },
+                                                ].map((item, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between bg-background/60 backdrop-blur-md p-3 rounded-lg border border-border/60 hover:border-primary/40 transition-colors">
+                                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                                            <Badge variant="secondary">{item.badge}</Badge>
+                                                            <span>{item.label}</span>
+                                                        </div>
+                                                        <Button asChild size="sm" variant="ghost">
+                                                            <Link to={item.href}>
+                                                                <ArrowUpRight className="h-4 w-4" />
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </CardContent>
                                     </Card>
 
                                     <Card className="border-border/60">
                                         <CardHeader>
-                                            <CardTitle>Performance Trend</CardTitle>
+                                            <CardTitle>Learning playlists</CardTitle>
+                                            <CardDescription>Create small bundles to keep learners on track.</CardDescription>
                                         </CardHeader>
-                                        <CardContent>
-                                            <div className="h-[150px] flex items-end justify-between gap-2 px-2">
-                                                {[40, 65, 45, 80, 55, 90, 75].map((h, i) => (
-                                                    <div key={i} className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors relative group">
-                                                        <div
-                                                            className="absolute bottom-0 left-0 right-0 bg-primary rounded-t-sm transition-all duration-500"
-                                                            style={{ height: `${h}%` }}
-                                                        ></div>
-                                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                                                            {h}%
-                                                        </div>
+                                        <CardContent className="grid sm:grid-cols-2 gap-3">
+                                            {[
+                                                { title: 'Fundamentals', desc: 'Warm-up lessons and foundational theory.', tag: 'Beginner' },
+                                                { title: 'Workshop mode', desc: 'Hands-on labs to practice together.', tag: 'Live' },
+                                                { title: 'Assess & reflect', desc: 'Quizzes, feedback, and follow-ups.', tag: 'Assessment' },
+                                                { title: 'Teacher toolkit', desc: 'Templates, rubrics, and slides.', tag: 'Resource' },
+                                            ].map((item, idx) => (
+                                                <div key={idx} className="p-3 rounded-lg border border-border/60 bg-card hover:bg-accent/5 transition-colors flex flex-col gap-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-sm font-semibold">{item.title}</p>
+                                                        <Badge variant="outline" className="text-xs">{item.tag}</Badge>
                                                     </div>
-                                                ))}
-                                            </div>
-                                            <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                                                <span>Mon</span>
-                                                <span>Sun</span>
-                                            </div>
+                                                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                                                    <Button asChild size="sm" variant="ghost" className="self-start">
+                                                        <Link to="/meetings">
+                                                            Open
+                                                            <ArrowUpRight className="h-3 w-3 ml-1" />
+                                                        </Link>
+                                                    </Button>
+                                                </div>
+                                            ))}
                                         </CardContent>
                                     </Card>
                                 </div>

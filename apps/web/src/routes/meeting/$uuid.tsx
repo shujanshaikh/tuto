@@ -192,28 +192,26 @@ function MeetingPageComponent() {
   }
 
   function handleStopRecording() {
-    console.log("handleStopRecording called, egressId:", egressId);
     if (egressId) {
-      console.log("Attempting to stop recording with egressId:", egressId);
       stopRecording(
         { egressId },
         {
           onSuccess: (data) => {
-            console.log("Recording stopped successfully, response:", data);
+            toast.success("Recording stopped successfully");
             setRecording(false);
             setEgressId(null);
             setStatus("Recording stopped successfully!");
           },
           onError: (error) => {
-            console.error("Failed to stop recording:", error);
-            console.error("Error details:", JSON.stringify(error, null, 2));
-            console.log("Error details:", error);
+            toast.error("Failed to stop recording", {
+              description: error.message,
+            });
             setStatus(`Failed to stop recording: ${error.message}`);
           },
         }
       );
     } else {
-      console.warn("No egressId available to stop recording");
+      toast.error("No active recording to stop");
       setRecording(false);
       setStatus("No active recording to stop");
     }
@@ -237,7 +235,7 @@ function MeetingPageComponent() {
     if (!roomInstance) return;
 
     const handleDisconnected = () => {
-      console.log('LiveKit room disconnected');
+      toast.message('LiveKit room disconnected');
       navigate({ to: "/meetings" });
     };
 
