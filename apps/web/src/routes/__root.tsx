@@ -36,6 +36,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 			},
 			{
 				title: "Tuto",
+				description: "Tuto is a platform for learning and teaching",
 			},
 		],
 		links: [
